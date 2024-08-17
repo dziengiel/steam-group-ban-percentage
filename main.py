@@ -10,23 +10,21 @@ def check_if_banned(link):
 
     s = soup.find(name='div', class_='profile_ban_status')
 
-    if s == None:
-        return False
-    else:
+    if s:
         return True
+    else:
+        return False
 
-# def find_steam_links_in_string(string):
-#     string = string.split()
-#     links = set()
-#     for i in string:
-#         if i.startswith("href=https://steamcommunity.com/profiles/"):
-#             links.add(i)
-#     return links
-# #not banned
-# print(check_if_banned('https://steamcommunity.com/id/pstwo/'))
-#
-# #banned
-# print(check_if_banned('https://steamcommunity.com/profiles/76561199118069915'))
+
+def find_steam_links_in_string(string):
+    results = re.findall(r'href=https://steamcommunity.com/(?:profiles/(\d+)|id/([\w-]+))', string)
+    links = []
+    for i in results:
+        if i[0]:
+            links.append(f'https://steamcommunity.com/profiles/{i[0]}')
+        else:
+            links.append(f'https://steamcommunity.com/id/{i[1]}')
+    return set(links)
 
 
 grouplink = str(input('paste steam group link '))
@@ -45,8 +43,5 @@ s = str(s)
 
 s_without_qm = s.replace('"', '')
 
-links = re.findall(r'href=https://steamcommunity.com/profiles/(\d+)', s_without_qm)
-
-print(links)
 
 
