@@ -21,31 +21,35 @@ def find_steam_links_in_string(string):
             links.append(f'https://steamcommunity.com/id/{i[1]}')
     return set(links)
 
+
+def getting_banned_numbers_from_one_side_of_members(link):
+    r = requests.get(grouplink)
+
+    soup = BeautifulSoup(r.content, 'html.parser')
+
+    s = soup.find(name='div', id='memberList')
+
+    s = str(s)
+
+    s_without_qm = s.replace('"', '')
+
+    links = find_steam_links_in_string(s_without_qm)
+
+    banned_number = 0
+    notbanned_number = 0
+
+    for i in links:
+        if check_if_banned(i):
+            banned_number += 1
+        else:
+            notbanned_number += 1
+
+    return banned_number, notbanned_number
+
 grouplink = str(input('paste steam group link '))
 
 grouplink = grouplink+'/members'
 
-r = requests.get(grouplink)
+print(getting_banned_numbers_from_one_side_of_members(grouplink))
 
-soup = BeautifulSoup(r.content, 'html.parser')
 
-s = soup.find(name='div', id='memberList')
-
-s = str(s)
-
-s_without_qm = s.replace('"', '')
-
-links = find_steam_links_in_string(s_without_qm)
-
-banned = 0
-notbanned = 0
-
-for i in links:
-    if check_if_banned(i):
-        banned+=1
-    else:
-        notbanned+=1
-
-bannedpercentage = banned/(banned+notbanned)*100
-
-print(f'{bannedpercentage}%')
