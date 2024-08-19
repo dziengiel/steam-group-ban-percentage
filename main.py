@@ -22,11 +22,7 @@ def find_steam_links_in_string(string):
     return set(links)
 
 
-def getting_banned_numbers_from_one_side_of_members(link):
-    r = requests.get(grouplink)
-
-    soup = BeautifulSoup(r.content, 'html.parser')
-
+def getting_banned_numbers_from_one_side_of_members(link, soup):
     s = soup.find(name='div', id='memberList')
 
     s = str(s)
@@ -50,6 +46,10 @@ grouplink = str(input('paste steam group link '))
 
 grouplink = grouplink+'/members'
 
-print(getting_banned_numbers_from_one_side_of_members(grouplink))
+r = requests.get(grouplink)
 
+soup = BeautifulSoup(r.content, 'html.parser')
 
+s = soup.find(name='div', class_='membercount members')
+
+print(getting_banned_numbers_from_one_side_of_members(grouplink, soup))
