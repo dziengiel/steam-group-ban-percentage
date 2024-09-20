@@ -22,7 +22,7 @@ def find_steam_links_in_string(string):
     return set(links)
 
 
-def getting_banned_numbers_from_one_side_of_members(link, soup):
+def getting_banned_numbers_from_one_site_of_members(link, soup):
     request = requests.get(link)
 
     soup = BeautifulSoup(request.content, 'html.parser')
@@ -39,15 +39,26 @@ def getting_banned_numbers_from_one_side_of_members(link, soup):
     notbanned_number = 0
 
     for i in links:
-        print('checking if banned')
         if check_if_banned(i):
-            notbanned_number += 1
-            print('n')
-        else:
             banned_number += 1
             print('y')
-    return banned_number, notbanned_number
+        else:
+            notbanned_number += 1
+            print('n')
+    return [banned_number, notbanned_number]
 
+def calculating_steam_group_ban_percentage(steam_group_link, number_of_member_sites, soup):
+
+    all_pages_numbers = [0, 0]
+
+    for i in range(number_of_member_sites):
+        current_site = getting_banned_numbers_from_one_site_of_members(steam_group_link+'/?p='+str(i+1), soup)
+        print(current_site)
+        all_pages_numbers[0] += current_site[0]
+        all_pages_numbers[1] += current_site[1]
+        print(all_pages_numbers)
+
+    return all_pages_numbers
 grouplink = str(input('paste steam group link '))+'/members'
 
 print(grouplink)
@@ -64,6 +75,9 @@ number_of_members = str(number_of_members)
 number_of_members = int(re.findall(r'\d+', number_of_members)[0])
 
 number_of_member_sites = int(number_of_members/51) + 1
-print(number_of_members)
+print(number_of_members, number_of_member_sites)
+final_numbers = (calculating_steam_group_ban_percentage(grouplink, number_of_member_sites, soup))
 
-print(getting_banned_numbers_from_one_side_of_members(grouplink, soup))
+percentage = final_numbers[0]/number_of_members
+
+print(percentage)
