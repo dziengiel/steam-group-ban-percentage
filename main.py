@@ -11,6 +11,7 @@ def check_if_banned(link):
     else:
         return False
 
+
 def find_steam_links_in_string(string):
     results = re.findall(r'href=https://steamcommunity.com/(?:profiles/(\d+)|id/([\w-]+))', string)
     links = []
@@ -38,14 +39,17 @@ def getting_banned_numbers_from_one_site_of_members(link, soup):
     banned_number = 0
     notbanned_number = 0
 
+    print('checking players bans')
+
     for i in links:
         if check_if_banned(i):
             banned_number += 1
-            print('y')
+            print('banned')
         else:
             notbanned_number += 1
-            print('n')
+            print('not')
     return [banned_number, notbanned_number]
+
 
 def calculating_steam_group_ban_percentage(steam_group_link, number_of_member_sites, soup):
 
@@ -53,31 +57,41 @@ def calculating_steam_group_ban_percentage(steam_group_link, number_of_member_si
 
     for i in range(number_of_member_sites):
         current_site = getting_banned_numbers_from_one_site_of_members(steam_group_link+'/?p='+str(i+1), soup)
-        print(current_site)
         all_pages_numbers[0] += current_site[0]
         all_pages_numbers[1] += current_site[1]
-        print(all_pages_numbers)
 
     return all_pages_numbers
+
+
 grouplink = str(input('paste steam group link '))+'/members'
 
-print(grouplink)
 r = requests.get(grouplink)
 
 soup = BeautifulSoup(r.content, 'html.parser')
 
-s = soup.find(name='div', class_='membercount members')
+s = soup.find(name='div', class_='group_paging')
 
-number_of_members = s.find(name='span', class_='count')
+s = str(s)
 
-number_of_members = str(number_of_members)
+s = s.splitlines()[-1]
 
-number_of_members = int(re.findall(r'\d+', number_of_members)[0])
+needed_list = list(s.split(" "))
+
+number_of_members = 0
+
+for i in needed_list:
+    try:
+        i = int(i)
+        if i > number_of_members:
+            number_of_members = i
+    except ValueError:
+        pass
 
 number_of_member_sites = int(number_of_members/51) + 1
-print(number_of_members, number_of_member_sites)
+
+
 final_numbers = (calculating_steam_group_ban_percentage(grouplink, number_of_member_sites, soup))
 
 percentage = final_numbers[0]/number_of_members
 
-print(percentage)
+print(f'{percentage * 100}%')
