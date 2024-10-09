@@ -39,8 +39,6 @@ def getting_banned_numbers_from_one_site_of_members(link, soup):
     banned_number = 0
     notbanned_number = 0
 
-    print('checking players bans')
-
     for i in links:
         if check_if_banned(i):
             banned_number += 1
@@ -54,6 +52,8 @@ def getting_banned_numbers_from_one_site_of_members(link, soup):
 def calculating_steam_group_ban_percentage(steam_group_link, number_of_member_sites, soup):
 
     all_pages_numbers = [0, 0]
+
+    print('checking players bans')
 
     for i in range(number_of_member_sites):
         current_site = getting_banned_numbers_from_one_site_of_members(steam_group_link+'/?p='+str(i+1), soup)
@@ -94,4 +94,4 @@ final_numbers = (calculating_steam_group_ban_percentage(grouplink, number_of_mem
 
 percentage = final_numbers[0]/number_of_members
 
-print(f'{percentage * 100}%')
+print(f'{round(percentage * 100, 2)}%')
