@@ -24,6 +24,7 @@ def find_steam_links_in_string(string):
 
 
 def getting_banned_numbers_from_one_site_of_members(link, soup):
+    global number_of_members
     request = requests.get(link)
 
     soup = BeautifulSoup(request.content, 'html.parser')
@@ -42,10 +43,10 @@ def getting_banned_numbers_from_one_site_of_members(link, soup):
     for i in links:
         if check_if_banned(i):
             banned_number += 1
-            print('banned')
+            print('b')
         else:
             notbanned_number += 1
-            print('not')
+            print('n')
     return [banned_number, notbanned_number]
 
 
